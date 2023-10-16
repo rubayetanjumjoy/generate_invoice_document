@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sample Form</title>
+    <style>
+        /* Add your CSS styles for a beautiful form here */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f2f2f2;
+            border-radius: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        select {
+            width: 96%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        select {
+            height: 35px;
+        }
+
+        /* Style for the button container */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Style for the buttons */
+        .submit-button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .logout-button {
+            background-color: #E74C3C;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        select#payment {
+            width: 101%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            height: 35px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Sample Form</h2>
+        <form action="{% url 'invoice' %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="email">Enter Email:</label>
+                <input type="email" id="email" name="email" </div>
+                <div class="form-group">
+                    <label for "fare">Total Fare:</label>
+                    <input type="text" id="fare" name="fare" required>
+                </div>
+                <div class="form-group">
+                    <label for="pickup">Pickup From:</label>
+                    <input type="text" id="pickup" name="pickup" required>
+                </div>
+                <div class="form-group">
+                    <label for="to">To:</label>
+                    <input type="text" id="to" name="to" required>
+                </div>
+                <div class="form-group">
+                    <label for="vehicle">Vehicle Number:</label>
+                    <input type="text" id="vehicle" name="vehicle" required>
+                </div>
+                <div class="form-group">
+                    <label for="payment">Payment Method:</label>
+                    <select id="payment" name="payment">
+                        <option value="credit">Credit Card</option>
+                        <option value="debit">Debit Card</option>
+                        <option value="cash">Cash</option>
+                    </select>
+                </div>
+
+                <!-- Button container to place buttons side by side -->
+                <div class="button-container">
+                    <button type="submit" class="submit-button">Submit</button>
+                    <a href="{% url 'logout' %}"><button type="button" class="logout-button">Logout</button></a>
+
+                </div>
+        </form>
+    </div>
+</body>
+<script>
+
+</script>
+
+</html>
