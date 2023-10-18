@@ -3,37 +3,50 @@
 <html>
 
 <head>
-    <title>Sample Form</title>
+    <title>Silver Service</title>
     <style>
-        /* Add your CSS styles for a beautiful form here */
+        /* Reset default styles */
         body {
             font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
         }
 
         .container {
             max-width: 400px;
-            margin: 0 auto;
+            margin: 50px auto;
             padding: 20px;
-            background-color: #f2f2f2;
-            border-radius: 10px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #DAA520;
+            margin-bottom: 20px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         label {
             font-weight: bold;
+            color: #333;
+            font-size: 16px;
         }
 
         input[type="text"],
         input[type="email"],
         select {
-            width: 96%;
+            width: 94%;
             padding: 10px;
             margin-top: 5px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            font-size: 16px;
         }
 
         select {
@@ -44,6 +57,7 @@
         .button-container {
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
         /* Style for the buttons */
@@ -54,6 +68,7 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
         }
 
         .logout-button {
@@ -63,28 +78,31 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
         }
 
         select#payment {
-            width: 101%;
-            padding: 10px;
+            width: 100%;
+            padding: 5px;
             margin-top: 5px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            height: 35px;
+            font-size: 16px;
         }
     </style>
+
 </head>
 
 <body>
     <div class="container">
-        <h2>Sample Form</h2>
+        <h2>Your Silver Service</h2>
         <form action="{% url 'invoice' %}" method="POST">
             {% csrf_token %}
             <div class="form-group">
                 <label for="email">Enter Email:</label>
-                <input type="email" id="email" name="email" </div>
+                <input type="email" id="email" name="email" required>
                 <div class="form-group">
+                    <br>
                     <label for "fare">Total Fare:</label>
                     <input type="text" id="fare" name="fare" required>
                 </div>

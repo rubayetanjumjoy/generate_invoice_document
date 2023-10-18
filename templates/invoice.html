@@ -79,11 +79,12 @@
         {% csrf_token %}
         <div class="container">
             <div class="header">
-                <img src="{% static 'images/logo.png' %}" alt="Company Logo">
+                <img src="http://127.0.0.1:8000/static/images/logo.png" alt="Company Logo">
                 <h1>INVOICE BILL</h1>
             </div>
             <h2>Invoice Details</h2>
             <table>
+
                 <tr>
                     <th>Email:</th>
                     <td>{{ email }}</td>

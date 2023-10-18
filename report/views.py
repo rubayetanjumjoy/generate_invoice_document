@@ -11,6 +11,8 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.conf import settings
+import pdfkit
+from django.core.mail import EmailMessage
 
 
 def login_view(request):
@@ -49,38 +51,17 @@ def form(request):
     return render(request, "form.html")
 
 
-@login_required
-def invoice(request):
-    context = {}  # Initialize the context dictionary
+def send_invoice_email(email, pdf_response):
+    subject = "Your Invoice"
+    message = "Please find your invoice attached."
+    from_email = settings.EMAIL_HOST_USER
+    recipient_list = [email]
 
-    if request.method == "POST":
-        # Get form data from POST request
-        email = request.POST.get("email")
-        fare = request.POST.get("fare")
-        pickup = request.POST.get("pickup")
-        to = request.POST.get("to")
-        vehicle = request.POST.get("vehicle")
-        payment_method = request.POST.get("payment")
+    email_message = EmailMessage(subject, message, from_email, recipient_list)
+    email_message.attach("invoice.pdf", pdf_response.content, "application/pdf")
 
-        # Add the form data to the context dictionary
-        context["email"] = email
-        context["fare"] = fare
-        context["pickup"] = pickup
-        context["to"] = to
-        context["vehicle"] = vehicle
-        context["payment_method"] = payment_method
-    request.session["invoice_context"] = context
-
-    # Render the HTML template with the context data
-    return render(request, "invoice.html", context)
-
-
-from django.http import HttpResponse
-from django.core.mail import EmailMessage
-from django.conf import settings
-from xhtml2pdf import pisa
-from bs4 import BeautifulSoup
-from django.contrib.auth.decorators import login_required
+    # Send the email
+    email_message.send()
 
 
 @login_required
@@ -103,27 +84,47 @@ def generate_pdf(request):
     # Get the modified HTML content
     modified_html = str(soup)
 
-    # Create a Django response object with appropriate PDF headers
-    response = HttpResponse(content_type="application/pdf")
-    response["Content-Disposition"] = 'filename="invoice.pdf"'
-
-    # Create a PDF from the modified HTML content
-    pisa_status = pisa.CreatePDF(modified_html, dest=response)
-
-    if pisa_status.err:
-        return HttpResponse("Error generating PDF", content_type="text/plain")
-
-    # Get the user's email (you should obtain this value from your authentication or user model)
-    user_email = context["email"]  # Replace with the user's email
-
-    # Send the PDF as an attachment via email
-    email = EmailMessage(
-        "Your Invoice",
-        "Please find your invoice attached.",
-        settings.EMAIL_HOST_USER,
-        [user_email],
+    # Specify the path to wkhtmltopdf executable (for Windows)
+    config = pdfkit.configuration(
+        wkhtmltopdf="C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
     )
-    email.attach("invoice.pdf", response.content, "application/pdf")
-    email.send()
 
+    # Generate the PDF from the HTML content
+    pdf = pdfkit.from_string(modified_html, False, configuration=config)
+
+    # Create an HTTP response with the PDF content
+    response = HttpResponse(pdf, content_type="application/pdf")
+    response["Content-Disposition"] = 'attachment; filename="invoice.pdf"'
     return response
+
+
+@login_required
+def invoice(request):
+    context = {}  # Initialize the context dictionary
+
+    if request.method == "POST":
+        # Get form data from POST request
+        email = request.POST.get("email")
+        fare = request.POST.get("fare")
+        pickup = request.POST.get("pickup")
+        to = request.POST.get("to")
+        vehicle = request.POST.get("vehicle")
+        payment_method = request.POST.get("payment")
+
+        # Add the form data to the context dictionary
+        context["email"] = email
+        context["fare"] = fare
+        context["pickup"] = pickup
+        context["to"] = to
+        context["vehicle"] = vehicle
+        context["payment_method"] = payment_method
+
+        # Store the context in the session for generating PDF
+        request.session["invoice_context"] = context
+
+        # Generate the PDF and attach it to an email
+        pdf_response = generate_pdf(request)
+        send_invoice_email(email, pdf_response)
+
+    # Render the HTML template with the context data
+    return render(request, "invoice.html", context)
